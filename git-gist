@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+import urllib2
+import json
+import sys
+import urllib
+import os
+
+data = {}
+data['public'] = False
+data['files'] = {}
+for file in os.listdir('.'):
+  if file.startswith("."):
+    continue
+  if os.path.isfile(file):
+    fh = open(file, 'r')
+    data['files'][file] = {'content': fh.read()}
+    fh.close()
+
+req = urllib2.Request(
+    "https://api.github.com/gists",
+    json.dumps(data),
+    {'Content-Type': 'application/x-www-form-urlencoded'},
+)
+
+try:
+  response = json.load(urllib2.urlopen(req))
+except urllib2.HTTPError, e:
+  print e, e.read()
+print response['html_url']
